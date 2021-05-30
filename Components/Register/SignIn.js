@@ -1,20 +1,51 @@
-import React from 'react'
-import { StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { ScrollView } from 'react-native';
 import {Text, View} from 'react-native';
 import {Input,Button} from 'react-native-elements';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import auth from '@react-native-firebase/auth';
+
+import LogoImage from '../LogoImage';
 
 
 
 const SignIn = () => {
+    const navigation = useNavigation();
+  const [mail, setMail] = useState('');
+  const [pass, setPass] = useState('');
+
+  useEffect(() =>{
+    const unSubscrib = auth().onAuthStateChanged((authUser) => {
+      console.log(authUser);
+      if (authUser) {
+        navigation.replace("home");
+      }
+    })
+    return unSubscrib;
+  }, [])
+
+  const login = () => {
+    auth().signInWithEmailAndPassword(mail, pass)
+      .catch((error) => alert(error));
+}
+
+
+
   return (
+    <KeyboardAvoidingView>
+      <LogoImage />
     <View style={styles.signUp}>
-    <Text style={styles.title}>Sign In</Text>
+    <View style={styles.titleContainer}>
+            <Text style={styles.title}>Sign In</Text>
+          </View>
     <View style={styles.inputcontainer}>
-      <Text style={styles.inputTitle}>Enter Your Email</Text>
+      {/* <Text style={styles.inputTitle}>Enter Your Email</Text> */}
       <Input 
-        placeholder='Email'
+            placeholder='Email'
+            type='email'
+            value={mail}
         leftIcon={
           <MaterialIcons
           name="mail"
@@ -22,12 +53,15 @@ const SignIn = () => {
           color='black'
         />
         }
+        onChangeText={(text)=>setMail(text)}
       />
     </View>
     <View style={styles.inputcontainer}>
-      <Text style={styles.inputTitle}>Enter Your Password</Text>
+      {/* <Text style={styles.inputTitle}>Enter Your Password</Text> */}
       <Input 
-        placeholder='Password'
+            placeholder='Password'
+            type='password'
+            value={pass}
         leftIcon={
           <MaterialIcons
           raised
@@ -36,44 +70,51 @@ const SignIn = () => {
           color='black'
         />
         }
+        onChangeText={(text)=>setPass(text)}
         secureTextEntry={true}
       />
     </View>
     <View style={styles.btnContainer}>
       <Button 
-      type="outline"
+      type="solid"
        titleStyle={
          {
            fontWeight:'bold',
            fontSize:20,
-           color:'white',
-
+           color:'black',
            padding:35
 
           }
        }
        containerStyle={{
-        marginRight:15
+        width: 330,
+               marginVertical: 10,
+               borderWidth:.5
        }}
-      title='Sing Up'
+            title='Sing In'
+            onPress={login}
       />
       <Button 
       type="outline"
       titleStyle={{
         fontWeight:'bold',
         fontSize:20,
-        color:'white',
+        color:'black',
         padding:35
         
       }
       }
       containerStyle={{
-        marginLeft:15
+        width: 330,
+               marginVertical: 10,
+               borderWidth:.5
       }}
-      title='Clear'
+            title='Sign Up'
+            onPress={()=>navigation.navigate('signup')}
       />
     </View>
-    </View>
+      </View>
+      </KeyboardAvoidingView>
   )
 }
 
@@ -81,35 +122,40 @@ const SignIn = () => {
 
 const styles=StyleSheet.create({
   signUp:{
-    backgroundColor:"#00fff0",
+    // backgroundColor:"#00fff0",
     borderWidth:1,
     borderRadius:50,
     borderBottomEndRadius:50,
     borderBottomStartRadius:50,
     margin:3,
-    borderColor:'#00fff0'
+    // borderColor:'#00fff0'
   },
 
   title:{
     margin:20,
     fontWeight:'bold',
-    fontSize:25,
-    color:'white'
+    fontSize:30,
+    color:'black'
+  },
+  titleContainer:{
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems:'center'
   },
   inputcontainer:{
-    marginHorizontal:20
+    marginHorizontal: 20,
+    marginVertical:10
   },
   btnContainer:{
-
-margin: 20,
-flexDirection:'row',
-alignContent:'space-between',
-padding:20
+marginTop: 25,
+  marginBottom: 25,
+  justifyContent: 'center',
+  alignItems:'center'
   },
   inputTitle:{
     fontSize:20,
     fontWeight:'bold',
-    color:'white',
+    color:'black',
     marginLeft:15
   }
 })

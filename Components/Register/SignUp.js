@@ -1,29 +1,50 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { useLayoutEffect, useState } from 'react';
+import { StyleSheet,KeyboardAvoidingView, TouchableOpacity, ScrollView } from 'react-native';
 import {Text, View} from 'react-native';
-import {Input,Button} from 'react-native-elements';
+import {Input,Button, Icon} from 'react-native-elements';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
+import auth from '@react-native-firebase/auth';
 
 
 import HeaderComp from '../HeaderComp';
+import LogoImage from '../LogoImage';
 
 const SignUp = () => {
+  const navigation = useNavigation();
+  const [name, setName] = useState('');
+  const [mail, setMail] = useState('');
+  const [img, setImg] = useState('');
+  const [pass, setPass] = useState('');
+
+  const registor = () => {
+    auth().createUserWithEmailAndPassword(mail, pass)
+      .then((authUser) => {
+        authUser.user.updateProfile({
+          displayName: name,
+          photoURL:img ||'../../assets/images/default.png',
+        });
+      }).catch((error) => alert(error.message));
+  }
+
   return (
-    <ScrollView>
-    <View>
-        <HeaderComp title='Registration From' />
+   <ScrollView>
+      
+   
+    <KeyboardAvoidingView>
+        <LogoImage />
         <View style={styles.signUp}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Sign Up</Text>
-            <Text style={styles.title}>Sign In</Text>
           </View>
           
           <View style={styles.inputcontainer}>
-            <Text style={styles.inputTitle}>Enter Your Name</Text>
+            {/* <Text style={styles.inputTitle}>Enter Your Name</Text> */}
             <Input 
-              placeholder='Enter your Full Name'
+            placeholder='Enter your Full Name'
+            autoFocus
+            type='text'
+            value={name}
               leftIcon={
                 <MaterialIcons
                 name="account-circle"
@@ -31,12 +52,15 @@ const SignUp = () => {
                 color='black'
               />
               }
+            onChangeText={(text)=>setName(text)}
             />
           </View>
           <View style={styles.inputcontainer}>
-            <Text style={styles.inputTitle}>Enter Your Email</Text>
+            {/* <Text style={styles.inputTitle}>Enter Your Email</Text> */}
             <Input 
-              placeholder='Email'
+            placeholder='Email'
+            type='email'
+            value={mail}
               leftIcon={
                 <MaterialIcons
                 name="mail"
@@ -44,12 +68,32 @@ const SignUp = () => {
                 color='black'
               />
               }
+            onChangeText={(text)=>setMail(text)}
+            />
+        </View>
+        <View style={styles.inputcontainer}>
+            {/* <Text style={styles.inputTitle}>Enter Your Name</Text> */}
+            <Input 
+            placeholder='profile image'
+            type='text'
+            value={img}
+              leftIcon={
+                <MaterialIcons
+                name="account-circle"
+                size={24}
+                color='black'
+              />
+              }
+            onChangeText={(text) => setImg(text)}
+            onSubmitEditing={registor}
             />
           </View>
           <View style={styles.inputcontainer}>
-            <Text style={styles.inputTitle}>Enter Your Password</Text>
+            {/* <Text style={styles.inputTitle}>Enter Your Password</Text> */}
             <Input 
-              placeholder='Password'
+            placeholder='Password'
+            type='password'
+            value={pass}
               leftIcon={
                 <MaterialIcons
                 raised
@@ -58,84 +102,94 @@ const SignUp = () => {
                 color='black'
               />
               }
-              secureTextEntry={true}
+            secureTextEntry={true}
+            onChangeText={(text)=>setPass(text)}
             />
           </View>
           <View style={styles.btnContainer}>
             <Button 
-            type="outline"
+            type="solid"
              titleStyle={
                {
                  fontWeight:'bold',
                  fontSize:20,
-                 color:'white',
-  
+                 color:'black',
                  padding:35
 
                 }
              }
              containerStyle={{
-              marginRight:15
+               width: 330,
+               marginVertical: 10,
+               borderWidth:.5
+              
              }}
             title='Sing Up'
+          onPress={registor}
             />
             <Button 
             type="outline"
             titleStyle={{
               fontWeight:'bold',
               fontSize:20,
-              color:'white',
+              color:'black',
               padding:35
               
             }
             }
             containerStyle={{
-              marginLeft:15
+              width: 330,
+              marginVertical: 10,
+              borderWidth:.5
             }}
-            title='Clear'
+            title='Sign In'
+            onPress={()=>navigation.navigate("signin")}
             />
           </View>
-        </View>
-    </View>
-    </ScrollView>
+      </View>
+      </KeyboardAvoidingView>
+      </ScrollView>
   )
 }
 
 const styles=StyleSheet.create({
   signUp:{
-    backgroundColor:"#00fff0",
+    // backgroundColor:"#00fff0",
     borderWidth:1,
     borderRadius:50,
     borderBottomEndRadius:50,
     borderBottomStartRadius:50,
     margin:3,
-    borderColor:'#00fff0'
+    // borderColor:'#00fff0',
+  
   },
 
   title:{
     margin:20,
     fontWeight:'bold',
-    fontSize:25,
-    color:'white'
+    fontSize:30,
+    color:'black'
   },
   inputcontainer:{
-    marginHorizontal:20
+    marginHorizontal:20,
+    marginVertical:10
   },
-  btnContainer:{
-
-margin: 20,
-flexDirection:'row',
-alignContent:'space-between',
-padding:20
+btnContainer:{
+  marginTop: 25,
+  marginBottom: 25,
+  justifyContent: 'center',
+  alignItems:'center'
   },
-  inputTitle:{
+inputTitle:{
     fontSize:20,
     fontWeight:'bold',
-    color:'white',
+    color:'black',
     marginLeft:15
   },
-  titleContainer:{
-    flexDirection:'row'
+titleContainer:{
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems:'center'
   }
 })
 
