@@ -7,13 +7,14 @@ import { Avatar } from 'react-native-elements';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import { FlatList } from 'react-native';
 
 
 
 const ChatBox = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const [msg, setMsg] = useState('hello');
+  const [msg, setMsg] = useState('');
     const [messages, setMessages] = useState([]);
    useLayoutEffect(() => {
      navigation.setOptions({
@@ -67,18 +68,23 @@ const ChatBox = () => {
       ))
     return unsubscribe;
   }, [route])
-console.log('route params field name ', route.params.id)
+  console.log('route params field name ', route.params.id)
+ 
   return (
     <SafeAreaView style={{flex:1}}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={90}
+        // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
+        keyboardVerticalOffset={90}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <>
-          <ScrollView contentContainerStyle={{paddingTop:15}}>
-              {
+          <>
+            
+            <ScrollView
+              
+              contentContainerStyle={{ paddingTop: 15 }}>
+              {console.log("data ", messages.data)}
+              { 
                 messages.map(({ id, data }) =>
                   data.email === auth().currentUser.email ? (<View style={styles.reciever}>
                     <Avatar
@@ -93,8 +99,9 @@ console.log('route params field name ', route.params.id)
                       right={-5}
                       size={30}
                       source={{
-                        uri:data.photoURL,
+                        uri:data.photoURL
                       }}
+                      
                     />
                     <Text style={styles.recieverText}>
                       {data.message}
@@ -183,7 +190,8 @@ const styles = StyleSheet.create({
     padding: 10,
     color: 'grey',
     borderRadius: 30,
-    marginRight:15
+    marginRight: 15,
+    borderWidth:1
   },
   sender: {
     padding:15,
